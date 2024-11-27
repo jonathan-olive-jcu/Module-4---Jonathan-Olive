@@ -1,0 +1,73 @@
+---
+title: "QFish - Jonathan Olive"
+author: "Jonathan Olive"
+date: "2024-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r}
+install.packages("tidyverse")
+install.packages("usethis")
+library(tidyverse)
+library(usethis)
+```
+
+user_git_config(user.name="jonathan-olive-jcu", user.email="jonathan.olive@my.jcu.edu.au")
+gitcreds::gitcreds_set() #Only generate a new access token if accessing from a new device
+
+```{r}
+#Allow RStudio to read our dataset
+shark_data <- read.csv("Shark Data.csv")
+```
+
+```{r}
+#Load the dataset
+shark_data <- read.csv("Shark Data.csv", header = FALSE)
+
+#Checking our data. The command head() allows a visualisation of the first 6 rows of our dataset
+head(shark_data)
+```
+
+```{r}
+#First assign the second row as column names
+colnames(shark_data) <- shark_data[2, ]
+
+#Second, remove the first two rows (old headers and placeholders)
+shark_data <- shark_data[-c(1, 2), ]
+
+#Finally, reset row names
+rownames(shark_data) <- NULL
+```
+
+```{r}
+#Let's tidy it up a bit
+#Identify columns with "Unnamed" or NA names
+shark_data <- shark_data[, !grepl("Unnamed", names(shark_data))]
+
+#We can also remove columns with excessive missing values (optional)
+shark_data <- shark_data[, colSums(is.na(shark_data)) < nrow(shark_data)]
+```
+
+```{r}
+library(tidyr)
+
+#Reshape into long format if needed
+shark_data <- pivot_longer(shark_data, cols = -1, names_to = "Year", values_to = "Count")
+```
+
+```{r}
+#Checking the structure of the cleaned dataset
+str(shark_data)
+
+#View the first few rows
+head(shark_data)
+```
+
+
+
